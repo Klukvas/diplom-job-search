@@ -9,6 +9,8 @@ verify_ssl = true
 pyqt5 = "*"
 beautifulsoup4 = "*"
 selenium = "*"
+sqlalchemy = "*"
+sqlalchemy-utils = "*"
 
 [requires]
 python_version = "3.8"
