@@ -1,9 +1,9 @@
-from selenium_object import Selenium_object
+from driver_object import Selenium_object
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
-from Logger import Logger
+from logger import Logger
 
 from bs4 import BeautifulSoup
 
