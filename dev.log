@@ -1,0 +1,5 @@
+CRITICAL: 30/11  01:55:14: Ошибка Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=87.0.4280.66)
+ в формате имейла при входе на https://rabota.ua завершение работы с данным сервисом: rabora_ua_search.py:  87 try_login:
+INFO: 30/11  02:03:52: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: rabora_ua_search.py:  68 try_login:
