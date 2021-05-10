@@ -46,6 +46,14 @@ class EngLvl(Base):
     __tablename__ = 'EngLvl'
     lvl = Column(String(100),  primary_key=True, unique = True)
 
+class Search_period(Base):
+    __tablename__ = 'search_period'
+    period = Column(String(100),  primary_key=True, unique = True)
+
+class Heading(Base):
+    __tablename__ = 'heading'
+    heading = Column(String(100),  primary_key=True, unique = True)
+
 def insert_EngLvl():
     with open('engLvl.txt', encoding='utf-8') as f:
         print('start insert')
@@ -58,11 +66,33 @@ def insert_EngLvl():
         print('finish insert')
 
 def insert_cities():
-    with open('rabota_ua_cites.txt', encoding='utf-8') as f:
+    with open('cities.txt', encoding='utf-8') as f:
         print('start insert')
         for line in f:
             record = Cities(
                 city = line.replace('\n', ' ')
+                                ) 
+            db_client.session.merge(record)
+        db_client.session.commit()
+        print('finish insert')
+
+def insert_period():
+    with open('период_поискаю.txt', encoding='utf-8') as f:
+        print('start insert')
+        for line in f:
+            record = Search_period(
+                period = line.replace('\n', ' ').strip()
+                                ) 
+            db_client.session.merge(record)
+        db_client.session.commit()
+        print('finish insert')
+
+def insert_heading():
+    with open('parents.txt', encoding='utf-8') as f:
+        print('start insert')
+        for line in f:
+            record = Heading(
+                heading = line.replace('\n', ' ').strip()
                                 ) 
             db_client.session.merge(record)
         db_client.session.commit()
@@ -75,11 +105,18 @@ def get_all_engLvls():
         all_engLvls.append(object_.lvl)
     return all_engLvls
 
+def get_all_periods():
+    periods_objects = db_client.session.query(Search_period).all()
+    periods = []
+    for object_ in periods_objects:
+        periods.append(object_.period)
+    return periods
+
 def get_all_cities():
     cities_objects = db_client.session.query(Cities).all()
     all_cities = []
     for object_ in cities_objects:
-        all_cities.append(object_.city)
+        all_cities.append(object_.city.strip())
     return all_cities
 
 def get_filtered_cities(value):
@@ -90,3 +127,11 @@ def get_filtered_cities(value):
         filtered_cities.append(object_.city)
     return filtered_cities
 
+def get_all_headings():
+    heading_objects = db_client.session.query(Heading).all()
+    headings = []
+    for object_ in heading_objects:
+        headings.append(object_.heading)
+    headings.reverse()
+    headings.reverse()
+    return headings

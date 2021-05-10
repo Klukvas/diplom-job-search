@@ -3,3 +3,20 @@ from unknown error: web view not found
   (Session info: chrome=87.0.4280.66)
  в формате имейла при входе на https://rabota.ua завершение работы с данным сервисом: rabora_ua_search.py:  87 try_login:
 INFO: 30/11  02:03:52: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: rabora_ua_search.py:  68 try_login:
+INFO: 09/05  01:45:50: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: worker_v2.py:  44 login:
+INFO: 09/05  02:03:33: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: worker_v2.py:  44 login:
+WARNING: 09/05  02:04:49: Неопознанная ошибка Вы ввели неверный пароль или логин при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  57 login:
+WARNING: 09/05  02:04:49: Неопознанная ошибка Вы ввели неверный пароль или логин при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  58 login:
+WARNING: 09/05  02:05:58: Неопознанная ошибка Поле обязательное для заполнения при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  57 login:
+WARNING: 09/05  02:05:58: Неопознанная ошибка Поле обязательное для заполнения при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  58 login:
+WARNING: 09/05  02:07:26: Ошибка Поле обязательное для заполнения при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  54 login:
+WARNING: 09/05  02:07:26: Ошибка Поле обязательное для заполнения при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  55 login:
+WARNING: 09/05  02:08:24: Ошибка Поле обязательное для заполнения при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  54 login:
+WARNING: 09/05  02:08:24: Ошибка Поле обязательное для заполнения при входе на https://rabota.ua используя - p11avlenkoandrey56@gmail.com: shadow56457: worker_v2.py:  55 login:
+WARNING: 09/05  02:09:11: Ошибка Неверный формат адреса при входе на https://rabota.ua используя - pavlenkoandrey56gmail.com: shadow56457: worker_v2.py:  54 login:
+WARNING: 09/05  02:09:11: Ошибка Неверный формат адреса при входе на https://rabota.ua используя - pavlenkoandrey56gmail.com: shadow56457: worker_v2.py:  55 login:
+INFO: 09/05  02:14:39: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: worker_v2.py:  44 login:
+INFO: 09/05  02:15:15: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: worker_v2.py:  44 login:
+INFO: 09/05  02:20:10: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: worker_v2.py:  44 login:
+INFO: 09/05  02:20:31: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: worker_v2.py:  44 login:
+INFO: 09/05  03:12:44: Успешный вход на https://rabota.ua используя - pavlenkoandrey56@gmail.com / shadow56457: worker_v2.py:  44 login:

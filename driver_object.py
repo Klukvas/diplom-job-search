@@ -4,7 +4,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 # from seleniumwire import webdriver 
 import settings
-
+from time import sleep
 
 class Selenium_object:
     def __init__(self):
@@ -29,3 +29,26 @@ class Selenium_object:
         self.driver = webdriver.Chrome(executable_path=settings.path_to_driver, options=self.chrome_options)
         self.driver.implicitly_wait(30)
         self.wait = WebDriverWait(self.driver, 30)
+
+    def connect_to_service(self, url, *args):
+        if len(args) == 0:
+            try:
+                self.driver.get(url)
+            except Exception as err:
+                print(err)
+                sleep(13)
+                self.connect_to_service(url, 1)
+        else:
+            if args[0] == 1:
+                try:
+                    self.driver.get(url)
+                except Exception as err:
+                    print(err)
+                    sleep(13)
+                    self.connect_to_service(url, 2)
+            else:
+                try:
+                    self.driver.get(url)
+                except Exception as err:
+                    print(f"{err}\n Не удалось подключиться к {url}. Завершение работы с сайтом")
+                    #закончить работу 

@@ -1,0 +1,7 @@
+Добавить радиобаттоны в группу
+Добавить чекбоксы в группу
+self.pos_level_group = QtWidgets.QButtonGroup()
+self.pos_level_group.addButton(self.director)
+
+разрешить мультиселект чекбоксов
+self.pos_level_group.setExclusive(False)
