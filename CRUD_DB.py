@@ -16,13 +16,13 @@
 #    
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Boolean, DATE
 from sqlalchemy.orm import sessionmaker
 
 from sqlalchemy_utils import database_exists, create_database
 
 from sqlalchemy.sql import select
-
+from datetime import date
 
 
 Base = declarative_base()
@@ -53,6 +53,16 @@ class Search_period(Base):
 class Heading(Base):
     __tablename__ = 'heading'
     heading = Column(String(100),  primary_key=True, unique = True)
+
+class SendedCvs(Base):
+    __tablename__ = 'sendedCvs'
+    id = Column(Integer(), primary_key=True)
+    vacancy_id = Column(Integer())
+    company_id = Column(Integer())
+    cv_id = Column(Integer())
+    cv_name = Column(String(100))
+    is_profCv = Column(Boolean(), unique=False)
+    date_of_callback = Column(DATE(), default=date.today())
 
 def insert_EngLvl():
     with open('engLvl.txt', encoding='utf-8') as f:
@@ -98,11 +108,24 @@ def insert_heading():
         db_client.session.commit()
         print('finish insert')
 
+def insert_sended_cvs(vacancy_id, company_id, cv_id, cv_name ,is_profCv):
+    record = SendedCvs(
+        vacancy_id = vacancy_id,
+        company_id = company_id,
+        cv_id = cv_id,
+        cv_name = cv_name,
+        is_profCv = is_profCv
+                        ) 
+    db_client.session.merge(record)
+    db_client.session.commit()
+    print('finish insert')
+
 def get_all_engLvls():
     engLvls_objects = db_client.session.query(EngLvl).all()
     all_engLvls = []
     for object_ in engLvls_objects:
-        all_engLvls.append(object_.lvl)
+        all_engLvls.append(object_.lvl.strip())
+    all_engLvls.reverse()
     return all_engLvls
 
 def get_all_periods():

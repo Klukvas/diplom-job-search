@@ -1,0 +1,51 @@
+Добавить радиобаттоны в группу
+        
+        self.type_of_work_group = QtWidgets.QButtonGroup()
+        self.type_of_work_group.addButton(self.all)
+        self.type_of_work_group.addButton(self.full)
+        self.type_of_work_group.addButton(self.practice)
+        self.type_of_work_group.addButton(self.not_full)
+        self.type_of_work_group.addButton(self.remote)
+        self.type_of_work_group.addButton(self.project)
+        self.type_of_work_group.addButton(self.part)
+        self.type_of_work_group.addButton(self.season)
+
+Добавить чекбоксы в группу
+
+        self.pos_level_group = QtWidgets.QButtonGroup()
+        self.pos_level_group.addButton(self.director)
+        self.pos_level_group.addButton(self.head_department)
+        self.pos_level_group.addButton(self.Senior)
+        self.pos_level_group.addButton(self.Middle)
+        self.pos_level_group.addButton(self.junior)
+        self.pos_level_group.addButton(self.work_spec)
+
+
+Pазрешить мультиселект чекбоксов
+
+        self.pos_level_group.setExclusive(False)
+
+Заполнить данными дропдаун поля
+        import CRUD_DB
+        
+        ...
+        
+        all_periods = CRUD_DB.get_all_periods()
+        self.period_search.addItems(all_periods)
+
+        all_variants = CRUD_DB.get_all_headings()
+        self.variants.addItems(all_variants)
+
+        all_cities = CRUD_DB.get_all_cities()
+        self.city.addItems(all_cities)
+
+        all_engLvls = CRUD_DB.get_all_engLvls()
+        self.eng_lvl.addItems(all_engLvls)
+
+Пооставить по дефолту активным радиобраттон резюме, которое было созданно на сайте
+
+        self.radioButton_2.setChecked(True)
+
+Cделать work_log ридонли - желательно через дизайнер
+
+        self.window.work_log.setReadOnly(True)

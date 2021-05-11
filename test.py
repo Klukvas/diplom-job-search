@@ -1,4 +1,4 @@
-import requests
-
-for i in range(2,12+1):
-    print(i)
+from re import search
+href = "/company825/vacancy8405613"
+company = search(r'company\d+', href).group(0).replace('company', '')
+print(company)
