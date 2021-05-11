@@ -54,7 +54,7 @@ class MyWin(QtWidgets.QMainWindow):
             "Юристы, адвокаты, нотариусы": 29
         }
         self.eng_lvl = {'родной': 8, 'свободно': 7, 'продвинутый': 6, 'выше среднего': 5, 'средний': 4, 'ниже среднего': 3, 'базовый': 2, 'не владею': 1}
-
+        self.all_ids = []
     def start_work(self):
         self.window.start_work.setEnabled(False)
         self.worker = Worker(self.window)
@@ -64,7 +64,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.window.password.setStyleSheet("")
         self.window.name_of_work.setStyleSheet("") 
         self.window.cv_name.setStyleSheet("") 
-        self.window.city.setStyleSheet("") 
+        self.window.city.setStyleSheet("")
         is_valid_email = fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', self.window.email.text())
         is_valid_password = len(self.window.password.text())
         if not is_valid_email:
@@ -181,6 +181,8 @@ class MyWin(QtWidgets.QMainWindow):
                         else:
                             self.window.work_log.append(f'Невозможно найти резюме, которое ранее было загруженно с именем: {nameCv}')
                         break
+                    elif result[0] == 'AlreadySened':
+                        self.window.work_log.append(f'На вакансию https://rabota.ua/{result[1]} уже был отклик')
                     else:
                         self.window.work_log.append(f'Ошибка при отправке резюме на: https://rabota.ua/{result[1]}')
 

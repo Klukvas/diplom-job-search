@@ -49,3 +49,7 @@ Pазрешить мультиселект чекбоксов
 Cделать work_log ридонли - желательно через дизайнер
 
         self.window.work_log.setReadOnly(True)
+
+Сделать чекбокс Отправлять резюме повторно - по дефолту тру
+
+        self.resend.setChecked(True)

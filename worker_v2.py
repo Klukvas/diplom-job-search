@@ -10,7 +10,7 @@ from math import ceil
 from time import sleep
 from jobseeker import Jobseeker
 import settings
-
+import CRUD_DB
 class Worker(Selenium_object):
     
     def __init__(self, window):
@@ -113,14 +113,22 @@ class Worker(Selenium_object):
         return len(self.hrefs)
             
     def send_cv(self, email, password, addAlert, letter, eng_lvl, profCv, nameCv):
+        if not self.window.resend.isChecked():
+            self.all_ids = CRUD_DB.get_all_vacancies_ids()
         token = self.seekerApi.login(email, password)
         if token == None:
             self.window.work_log.append(f'Невозможно войти в аккаунт используя: {email} / {password}')
         else:
             for href in self.hrefs:
                 vacancyId = search(r'vacancy\d+', href).group(0).replace('vacancy', '')
-                result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
-                yield [result, href]
+                if not self.window.resend.isChecked():
+                    print(self.all_ids)
+                    print(vacancyId)
+                    if int(vacancyId) in self.all_ids:
+                        yield ['AlreadySened', href]
+                        continue
+                    result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
+                    yield [result, href]
 
 
 

@@ -158,3 +158,10 @@ def get_all_headings():
     headings.reverse()
     headings.reverse()
     return headings
+
+def get_all_vacancies_ids():
+    ids_object = db_client.session.query(SendedCvs.vacancy_id).all()
+    all_ids = []
+    for object_ in ids_object:
+        all_ids.append(object_[0])
+    return all_ids
