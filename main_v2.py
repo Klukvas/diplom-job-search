@@ -1,12 +1,20 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from ui_components.gui_v2 import Ui_MainWindow
 
+from ui_components.gui_v2 import Ui_MainWindow
+from ui_components.login import Ui_Login
+from ui_components.register import Ui_register
 
 import CRUD_DB
 from datetime import date, timedelta
-from re import fullmatch
+from re import fullmatch, search
 from worker_v2 import Worker
+
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+
+from random import randint
 
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -55,6 +63,7 @@ class MyWin(QtWidgets.QMainWindow):
         }
         self.eng_lvl = {'родной': 8, 'свободно': 7, 'продвинутый': 6, 'выше среднего': 5, 'средний': 4, 'ниже среднего': 3, 'базовый': 2, 'не владею': 1}
         self.all_ids = []
+        
     def start_work(self):
         self.window.start_work.setEnabled(False)
         self.worker = Worker(self.window)
@@ -159,10 +168,13 @@ class MyWin(QtWidgets.QMainWindow):
     def get_hrefs(self, url):
         count_vacansies = self.worker.parse_data_vacancies(url)
         self.window.work_log.append(f'Найдено вакансий по заданным критериям: {str(count_vacansies)}')
+        print('asd')
         if int(count_vacansies) > 0:
-            email = self.window.email.text()
-            password = self.window.password.text()
-            nameCv = self.window.cv_name.text()
+            print('asd2')
+
+            email = self.window.email.text().strip()
+            password = self.window.password.text().strip()
+            nameCv = self.window.cv_name.text().strip()
             if self.window.get_same.isChecked():
                 addAlert = True
             else:
@@ -197,7 +209,158 @@ class MyWin(QtWidgets.QMainWindow):
         return
 
 
+class LogIn(QtWidgets.QMainWindow):
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
+        self.log_wind = Ui_Login()
+        self.log_wind.setupUi(self)
+        self.reg_wind = Register()
+        self.main_window = MyWin()
+        self.log_wind.go_login_2.clicked.connect(self.open_register)
+        self.log_wind.login.clicked.connect(self.login)
+        self.log_wind.log_email.setStyleSheet("")
 
+    def login(self):
+        
+        email = self.log_wind.log_email.text().strip()
+        password = self.log_wind.log_pass.text().strip()
+        if ';' in email:
+            self.log_wind.log_email.setStyleSheet("border: 2px solid red;")
+            self.log_wind.log_email.setToolTip("Введите корректный имейл")
+        elif ';' in password:
+            self.log_wind.log_pass.setStyleSheet("border: 2px solid red;")
+            self.log_wind.log_pass.setToolTip("Введите корректный пароль")
+        else:
+            user = CRUD_DB.get_user(email, password)
+            if len(user) == 0:
+                buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован",  QtWidgets.QMessageBox.Cancel)
+            elif user[0] == False:  
+                buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован", QtWidgets.QMessageBox.Cancel)
+            else:
+                self.main_window.show()
+                self.close()
+
+    def open_register(self):
+        self.reg_wind.show()
+        self.close()
+
+class Register(QtWidgets.QMainWindow):
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
+        self.reg_wind = Ui_register()
+        self.mail_ui = MyWin()
+        self.confirm_code = ''
+        self.reg_wind.setupUi(self)
+        self.reg_wind.go_login.clicked.connect(self.open_login)
+        self.reg_wind.login.clicked.connect(self.register)
+
+    def register(self):
+        email = self.reg_wind.log_email.text().strip()
+        password1 = self.reg_wind.log_pass.text().strip()
+        password2 = self.reg_wind.log_pass_2.text().strip()
+        self.reg_wind.log_email.setToolTip("")
+        self.reg_wind.log_pass.setToolTip("")
+        self.reg_wind.log_pass_2.setToolTip("")
+        self.reg_wind.email_confirm.setToolTip("")
+        
+        self.reg_wind.log_email.setStyleSheet("")
+        self.reg_wind.log_pass.setStyleSheet("")
+        self.reg_wind.log_pass_2.setStyleSheet("")
+        self.reg_wind.email_confirm.setStyleSheet("")
+
+        is_valid_email = fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', email)
+        all_emails = CRUD_DB.get_all_emails()
+        if not self.reg_wind.email_confirm.isEnabled():
+            if email not in all_emails:
+                if not is_valid_email:
+                    self.reg_wind.log_email.setStyleSheet("border: 2px solid red;")
+                    self.reg_wind.log_email.setToolTip("Введите корректный имейл")
+
+                else:
+                    if len(password1) <= 5 or len(password1) >= 20:
+                        self.reg_wind.log_pass.setStyleSheet("border: 2px solid red;")
+                        self.reg_wind.log_pass.setToolTip("Длинна пароля должна быть от 5 до 20")
+                    else:
+                        is_valid_password = search(r'[!@#$%^&*()_+=;:?.,]',password1)
+                        if is_valid_password != None:
+                            self.reg_wind.log_pass.setStyleSheet("border: 2px solid red;")
+                            self.reg_wind.log_pass.setToolTip(f"Пароль не должен иметь спец.символов: {is_valid_password.group(0)}")
+                        else:
+                            if password1 != password2:
+                                self.reg_wind.log_pass.setStyleSheet("border: 2px solid red;")
+                                self.reg_wind.log_pass.setToolTip("Пароли должны совпадать")
+
+                                self.reg_wind.log_pass_2.setStyleSheet("border: 2px solid red;")
+                                self.reg_wind.log_pass_2.setToolTip("Пароли должны совпадать")
+                            else:
+                                self.confirm_code = randint(100000000, 1000000000)
+                                self.reg_wind.email_confirm.setEnabled(True)
+                                res = self.send_email(self.confirm_code, email)
+                                if res == 0:
+                                    buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "На вашу почту был отправлен имейл с кодом. Введите код в после подтверждения и нажмите кнопку регистрации еще раз",  QtWidgets.QMessageBox.Cancel)
+                                else:
+                                    buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "Не удалось отправить имейл с кодом подтверждения на почту. Убедитесь в правильности написания имейла",  QtWidgets.QMessageBox.Cancel)
+                                    self.reg_wind.email_confirm.setEnabled(False)
+            else:
+                buttonReply = QtWidgets.QMessageBox.question(self, 'Имейл занят', "Извините, но введенный вами имейл уже зарегестрирован в системе",  QtWidgets.QMessageBox.Cancel)
+
+        else:
+            code = self.reg_wind.email_confirm.text()
+            try:
+                code = int(code)
+            except:
+                self.reg_wind.email_confirm.setStyleSheet("border: 2px solid red;")
+                self.reg_wind.email_confirm.setToolTip("Указан неверный код")
+            if isinstance(code, int) and code == self.confirm_code:
+                    CRUD_DB.insert_user(email, password1)
+                    self.mail_ui.show()
+                    self.close()
+            else:
+                self.reg_wind.email_confirm.setStyleSheet("border: 2px solid red;")
+                self.reg_wind.email_confirm.setToolTip("Указан неверный код")
+                buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "Код отправленный на имейл и введенный вами отличаются",  QtWidgets.QMessageBox.Cancel)
+
+    def send_email(self, code, email):
+        result = ''
+        # create message object instance
+        msg = MIMEMultipart()
+        
+        
+        message = f"Привет! Спасибо за регистрацию в нашем приложении.\nОстался последний шаг - введи этот код в форме ригистрации: {code}"
+        
+        # setup the parameters of the message
+        password = "testpassword111"
+        msg['From'] = "autojobsearcher@gmail.com"
+        msg['To'] = email
+        msg['Subject'] = "Подтверждение имейла"
+        
+        # add in the message body
+        msg.attach(MIMEText(message, 'plain'))
+        
+        #create server
+        server = smtplib.SMTP('smtp.gmail.com: 587')
+        
+        server.starttls()
+        
+        # Login Credentials for sending the mail
+        server.login(msg['From'], password)
+        
+        
+        # send the message via the server.
+        try:
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
+            result =  0
+        except Exception as err:
+            result =  1
+        finally:
+            server.quit()
+            return result
+            
+
+    def open_login(self):
+        self.log_window = LogIn()
+        self.log_window.show()
+        self.close()
 
 
 
@@ -209,6 +372,10 @@ class MyWin(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    myapp = MyWin()
+    myapp = LogIn()
     myapp.show()
     sys.exit(app.exec_())
+    # app = QtWidgets.QApplication(sys.argv)
+    # myapp = MyWin()
+    # myapp.show()
+    # sys.exit(app.exec_())
