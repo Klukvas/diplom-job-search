@@ -281,7 +281,7 @@ class Ui_MainWindow(object):
         self.eng_lvl.addItems(all_engLvls)
 
         self.radioButton_2.setChecked(True)
-
+        self.resend.setChecked(True)
 
 
 

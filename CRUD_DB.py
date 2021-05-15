@@ -14,7 +14,7 @@
 
 # class AbiturientRow(DeclarativeBase):
 #    
-
+from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey, Boolean, DATE
 from sqlalchemy.orm import sessionmaker
@@ -29,7 +29,8 @@ Base = declarative_base()
 
 class DataBaseClient:
     def __init__(self):
-        self.engine = create_engine('sqlite:///diplom.db')
+        self.engine = create_engine('mysql+mysqldb://root:sololane56457@localhost:3306/diplom?charset=utf8')
+        # self.engine = create_engine('sqlite:///diplom.db')
         if not database_exists(self.engine.url):
             create_database(self.engine.url)
         Base.metadata.create_all(self.engine)
@@ -37,6 +38,13 @@ class DataBaseClient:
         self.session = Session()
 
 db_client = DataBaseClient()
+
+class UserInfo(Base):
+    __tablename__ = 'userinfo'
+    email = Column(String(100),  primary_key=True, unique = True)
+    password = Column(String(100),  primary_key=True, unique = True)
+    confirmed = Column(Boolean(), unique=False, default=False)
+    chat_id = Column(Integer())
 
 class Cities(Base):
     __tablename__ = 'Cities'
@@ -65,7 +73,7 @@ class SendedCvs(Base):
     date_of_callback = Column(DATE(), default=date.today())
 
 def insert_EngLvl():
-    with open('engLvl.txt', encoding='utf-8') as f:
+    with open('data_for_db\engLvl.txt', encoding='utf-8') as f:
         print('start insert')
         for line in f:
             record = EngLvl(
@@ -76,7 +84,7 @@ def insert_EngLvl():
         print('finish insert')
 
 def insert_cities():
-    with open('cities.txt', encoding='utf-8') as f:
+    with open('data_for_db\cities.txt', encoding='utf-8') as f:
         print('start insert')
         for line in f:
             record = Cities(
@@ -87,7 +95,7 @@ def insert_cities():
         print('finish insert')
 
 def insert_period():
-    with open('период_поискаю.txt', encoding='utf-8') as f:
+    with open('data_for_db\период_поискаю.txt', encoding='utf-8') as f:
         print('start insert')
         for line in f:
             record = Search_period(
@@ -98,7 +106,7 @@ def insert_period():
         print('finish insert')
 
 def insert_heading():
-    with open('parents.txt', encoding='utf-8') as f:
+    with open('data_for_db\parents.txt', encoding='utf-8') as f:
         print('start insert')
         for line in f:
             record = Heading(
@@ -140,6 +148,8 @@ def get_all_cities():
     all_cities = []
     for object_ in cities_objects:
         all_cities.append(object_.city.strip())
+    all_cities.remove('Вся Украина')
+    all_cities.insert(0, 'Вся Украина')
     return all_cities
 
 def get_filtered_cities(value):
@@ -155,6 +165,44 @@ def get_all_headings():
     headings = []
     for object_ in heading_objects:
         headings.append(object_.heading)
-    headings.reverse()
-    headings.reverse()
+    headings.remove('Все рубрики')
+    headings.insert(0, 'Все рубрики')
     return headings
+
+def get_all_vacancies_ids():
+    ids_object = db_client.session.query(SendedCvs.vacancy_id).all()
+    all_ids = []
+    for object_ in ids_object:
+        all_ids.append(object_[0])
+    return all_ids
+
+def get_filtered_vacans(value):
+    vacans_objects = db_client.session.query(SendedCvs).filter(SendedCvs.vacancy_id==value)
+    filtered_vacans = []
+    for object_ in vacans_objects:
+        filtered_vacans.append(object_.vacancy_id)
+    return filtered_vacans
+
+def get_user(email, password):
+    user_exists = db_client.session.query(UserInfo).filter(UserInfo.email==email, UserInfo.password==password)
+    user = []
+    for object_ in user_exists:
+        user.append(object_.confirmed)
+    return user
+
+def get_all_emails():
+    user_exists = db_client.session.query(UserInfo).all()
+    user = []
+    for object_ in user_exists:
+        user.append(object_.email)
+    return user
+
+def insert_user(email, password):
+    record = UserInfo(
+                    email = email.strip(),
+                    password=password.strip(),
+                    confirmed=True
+                                    ) 
+    db_client.session.merge(record)
+    db_client.session.commit()
+

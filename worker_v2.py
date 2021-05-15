@@ -1,7 +1,3 @@
-from driver_object import Selenium_object
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 import requests
 from logger import Logger
 from re import sub, search
@@ -10,60 +6,19 @@ from math import ceil
 from time import sleep
 from jobseeker import Jobseeker
 import settings
+import CRUD_DB
 
-class Worker(Selenium_object):
-    
+
+class Worker:
     def __init__(self, window):
-        # super().__init__()
         self.window = window
         self.top_url = "https://rabota.ua"
-        self.password = settings.password
-        self.email = settings.email
-        self.user_logger = Logger().user_logger()
-        self.dev_logger = Logger().dev_logger()
         self.count_vacancy_per_page = 40
         self.seekerApi = Jobseeker()
         self.hrefs = []
         self.session = requests.session()
         self.session.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 Safari/537.36'
         self.session.max_redirects = 22
-    def login(self):
-        self.connect_to_service(self.top_url)
-        #press on the log in btn
-        self.wait.until(EC.element_to_be_clickable((By.XPATH,"//div[contains(@class, 'santa-typo-secondary-bold profile-name ng-star-inserted')]"))).click()
-        #find log in btn in the form of login
-        self.sign_in_btn = self.driver.find_element(By.XPATH, "//button[contains(@class, 'primary-normal santa-block santa-typo-regular-bold full-width')]")
-
-        self.email_input = self.driver.find_element(By.XPATH, "(//aside[contains(@class, 'sidebar')]//input[contains(@id, 'santa-input')])[1]")
-        self.passwrod_input = self.driver.find_element(By.XPATH, "(//aside[contains(@class, 'sidebar')]//input[contains(@id, 'santa-input')])[2]")
-
-        self.email_input.send_keys(settings.email)
-        self.passwrod_input.send_keys(settings.password)
-        
-        self.sign_in_btn.click()
-        try:
-            #проверка успешно ли вошли в аккаунт
-            self.wait.until(EC.element_to_be_clickable((
-                By.XPATH, "//div[@id='mount_react_el']/section/div[contains(@class, 'fd-f-between-middle')]/a"
-            )))
-            self.dev_logger.info(f"Успешный вход на {self.top_url} используя - {settings.email} / {settings.password}")
-            self.user_logger.info(f"Успешный вход на {self.top_url} используя - {settings.email} / {settings.password}")
-        except Exception as err:
-            try:
-                #find an error msg
-                err_msg = self.wait.until(EC.presence_of_element_located((
-                            By.XPATH, "//santa-error-msg/p"
-                    ))).text
-
-                if err_msg.strip() in ['Поле обязательное для заполнения', 'Неверный формат адреса', 'Вы ввели неверный пароль или логин']:
-                    self.dev_logger.warning(f"Ошибка {err_msg} при входе на {self.top_url} используя - {self.email}: {self.password}")
-                    self.dev_logger.warning(f"Ошибка {err_msg} при входе на {self.top_url} используя - {self.email}: {self.password}")
-                else:
-                    self.dev_logger.warning(f"Неопознанная ошибка {err_msg} при входе на {self.top_url} используя - {self.email}: {self.password}")
-                    self.dev_logger.warning(f"Неопознанная ошибка {err_msg} при входе на {self.top_url} используя - {self.email}: {self.password}")
-            except Exception as err:
-                self.dev_logger.critical(f"Ошибка {err}.Вход не был исполнен")
-                self.user_logger.critical(f"Ошибка {err}.Вход не был исполнен")
 
     def get_data_of_search(self, url):
         try:
@@ -113,15 +68,23 @@ class Worker(Selenium_object):
         return len(self.hrefs)
             
     def send_cv(self, email, password, addAlert, letter, eng_lvl, profCv, nameCv):
+        if not self.window.resend.isChecked():
+            self.all_ids = CRUD_DB.get_all_vacancies_ids()
         token = self.seekerApi.login(email, password)
         if token == None:
             self.window.work_log.append(f'Невозможно войти в аккаунт используя: {email} / {password}')
         else:
             for href in self.hrefs:
                 vacancyId = search(r'vacancy\d+', href).group(0).replace('vacancy', '')
-                result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
-                yield [result, href]
-
+                if not self.window.resend.isChecked():
+                    if int(vacancyId) in self.all_ids:
+                        yield ['AlreadySened', href]
+                        continue
+                    result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
+                    yield [result, href]
+                else:
+                    result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
+                    yield [result, href]
 
 
 if __name__ == '__main__':

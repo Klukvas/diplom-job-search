@@ -12,6 +12,8 @@ selenium = "*"
 sqlalchemy = "*"
 sqlalchemy-utils = "*"
 requests = "*"
+pytelegrambotapi = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "*"

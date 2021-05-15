@@ -1,0 +1,1 @@
+pyuic5 register.ui -o register.py
