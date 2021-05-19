@@ -1,3 +1,4 @@
+from email import message
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -16,8 +17,13 @@ import smtplib
 
 from random import randint
 
+
+import queue
+from threading import Thread
+
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
+        self.que = queue.Queue()
         QtWidgets.QWidget.__init__(self, parent)
         self.window = Ui_MainWindow()
         self.window.setupUi(self)
@@ -25,6 +31,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.window.start_work.clicked.connect(self.start_work)
         self.type_of_work = {'all': 0, 'full': 1, 'practice': 4, 'not_full': 2, 'remote': 3, 'project': 5, 'part': 7, 'season': 6 }
         self.profLevelIDs = {'director': 6, 'head_department': 5, 'Senior': 4, 'Middle': 3, 'junior': 2, 'work_spec':1}
+        self.eng_lvl = {'родной': 8, 'свободно': 7, 'продвинутый': 6, 'выше среднего': 5, 'средний': 4, 'ниже среднего': 3, 'базовый': 2, 'не владею': 1}
         self.parentId = {
             "HR специалисты - Бизнес-тренеры": 3,
             "IT": 1,
@@ -61,12 +68,11 @@ class MyWin(QtWidgets.QMainWindow):
             "Туризм - Путешествия": 23,
             "Юристы, адвокаты, нотариусы": 29
         }
-        self.eng_lvl = {'родной': 8, 'свободно': 7, 'продвинутый': 6, 'выше среднего': 5, 'средний': 4, 'ниже среднего': 3, 'базовый': 2, 'не владею': 1}
         self.all_ids = []
         
     def start_work(self):
         self.window.start_work.setEnabled(False)
-        self.worker = Worker(self.window)
+        # self.worker = Worker(self.window)
         self.main_url = 'https://rabota.ua/zapros'
         self.additional_url = ''
         self.window.email.setStyleSheet("")
@@ -162,52 +168,99 @@ class MyWin(QtWidgets.QMainWindow):
                                 self.additional_url = f'?profLevelIDs={id_pos_lvl}'
                     self.full_url = self.main_url + self.additional_url
                     self.window.work_log.append(f'Попытка подключения к {self.full_url}')
-                    self.get_hrefs(self.full_url)
+                    # conn_obj = Connector(self.full_url, self.window)
+                    # connTh = Thread(target=conn_obj.get_hrefs)
+                    # connTh.start()
+                    # connTh.join()
+                    email = self.window.email.text().strip()
+                    password = self.window.password.text().strip()
+                    nameCv = self.window.cv_name.text().strip()
+                    if self.window.get_same.isChecked():
+                        addAlert = True
+                    else:
+                        addAlert = False
+                    letter = self.window.add_letter.toPlainText()
+                    eng_lvl = self.eng_lvl[self.window.eng_lvl.currentText()]
+                    if self.window.radioButton_2.isChecked():
+                        profCv = True
+                    else:
+                        profCv = False
+                    self.thread = QtCore.QThread()
+                    # создадим объект для выполнения кода в другом потоке
+                    self.browserHandler = Connector(self.full_url, self.window, email, password, addAlert, letter, eng_lvl, profCv, nameCv)
+                    # перенесём объект в другой поток
+                    self.browserHandler.moveToThread(self.thread)
+                    # после чего подключим все сигналы и слоты
+                    self.browserHandler.addTextLog.connect(self.append_from_thread)
+                    # подключим сигнал старта потока к методу run у объекта, который должен выполнять код в другом потоке
+                    self.thread.started.connect(self.browserHandler.get_hrefs)
+                    # запустим поток
+                    self.browserHandler.finished.connect(self.enable_start)
+                    self.thread.start()
+                    # self.thread.finished.connect(self.enable_start)
+                    # parseTh = Thread(target=self.get_hrefs, args=(self.full_url,))
+                    # parseTh.start()
+                    # parseTh.join()
+                    # self.get_hrefs(self.full_url)
+                    print('AFTER START')
+                    
+
                     return
+    @QtCore.pyqtSlot()
+    def enable_start(self):
+        print('SOOOOOOOO12')
+        self.window.start_work.setEnabled(True)
+        self.thread.terminate()
+    @QtCore.pyqtSlot(str)
+    def append_from_thread(self, message):
+        self.window.work_log.append(str(message))
 
-    def get_hrefs(self, url):
-        count_vacansies = self.worker.parse_data_vacancies(url)
-        self.window.work_log.append(f'Найдено вакансий по заданным критериям: {str(count_vacansies)}')
-        print('asd')
+class Connector(QtCore.QObject):
+    running = False
+    finished = QtCore.pyqtSignal()
+    addTextLog = QtCore.pyqtSignal(str)
+    def __init__(self, url, window, email, password, addAlert, letter, eng_lvl, profCv, nameCv):
+        super().__init__()
+        self.window = window
+        self.url = url
+        self.worker = Worker(self.window)
+        self.email  = email
+        self.password = password
+        self.addAlert = addAlert
+        self.letter = letter
+        self.eng_lvl = eng_lvl
+        self.profCv = profCv
+        self.nameCv = nameCv
+    def get_hrefs(self):
+        count_vacansies = self.worker.parse_data_vacancies(self.url)
+        # t = Thread(target=lambda q, url: q.put(self.worker.parse_data_vacancies(url)), args=(self.que, url))
+        # t.start()
+        # t.join()
+        # count_vacansies = self.que.get()
+        self.addTextLog.emit(f'Найдено вакансий по заданным критериям: {str(count_vacansies)}')
         if int(count_vacansies) > 0:
-            print('asd2')
-
-            email = self.window.email.text().strip()
-            password = self.window.password.text().strip()
-            nameCv = self.window.cv_name.text().strip()
-            if self.window.get_same.isChecked():
-                addAlert = True
-            else:
-                addAlert = False
-            letter = self.window.add_letter.toPlainText()
-            eng_lvl = self.eng_lvl[self.window.eng_lvl.currentText()]
-            if self.window.radioButton_2.isChecked():
-                profCv = True
-            else:
-                profCv = False
-            for result in self.worker.send_cv(email, password, addAlert, letter, eng_lvl, profCv, nameCv):
+            for result in self.worker.send_cv(self.email, self.password, self.addAlert, self.letter, self.eng_lvl, self.profCv, self.nameCv):
                 if type(result[0]) != bool:
                     if result[0] == 'errorCv':
-                        if profCv:
-                            self.window.work_log.append(f'Невозможно найти резюме, которое ранее было созданно с именем: {nameCv}')
+                        if self.profCv:
+                            self.addTextLog.emit(f'Невозможно найти резюме, которое ранее было созданно с именем: {self.nameCv}')
                         else:
-                            self.window.work_log.append(f'Невозможно найти резюме, которое ранее было загруженно с именем: {nameCv}')
+                            self.addTextLog.emit(f'Невозможно найти резюме, которое ранее было загруженно с именем: {self.nameCv}')
                         break
                     elif result[0] == 'AlreadySened':
-                        self.window.work_log.append(f'На вакансию https://rabota.ua/{result[1]} уже был отклик')
+                        self.addTextLog.emit(f'На вакансию https://rabota.ua/{result[1]} уже был отклик')
                     else:
-                        self.window.work_log.append(f'Ошибка при отправке резюме на: https://rabota.ua/{result[1]}')
+                        self.addTextLog.emit(f'Ошибка при отправке резюме на: https://rabota.ua/{result[1]}')
 
                 else:
                     if result[0] == True:
-                        self.window.work_log.append(f'Резюме было отправлено на: https://rabota.ua/{result[1]}')
+                        self.addTextLog.emit(f'Резюме было отправлено на: https://rabota.ua/{result[1]}')
                     else:
-                        self.window.work_log.append(f'Ошибка при отправке резюме на: https://rabota.ua/{result[1]}')
+                        self.addTextLog.emit(f'Ошибка при отправке резюме на: https://rabota.ua/{result[1]}')
+            self.addTextLog.emit(f'{"-"*30}\nРабота приложения завершена')
         else:
-            self.window.work_log.append(f'Дальнейшая работа приложения невозможна')
-        self.window.start_work.setEnabled(True)
-        return
-
+            self.addTextLog.emit(f'Дальнейшая работа приложения невозможна')
+        self.finished.emit()
 
 class LogIn(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
