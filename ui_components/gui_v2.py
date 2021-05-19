@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import CRUD_DB
+import connector
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -268,16 +268,16 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        all_periods = CRUD_DB.get_all_periods()
+        all_periods = connector.get_periods_conn()
         self.period_search.addItems(all_periods)
 
-        all_variants = CRUD_DB.get_all_headings()
+        all_variants = connector.get_headings_conn()
         self.variants.addItems(all_variants)
 
-        all_cities = CRUD_DB.get_all_cities()
+        all_cities = connector.get_cities_conn()
         self.city.addItems(all_cities)
 
-        all_engLvls = CRUD_DB.get_all_engLvls()
+        all_engLvls = connector.get_engLvls_conn()
         self.eng_lvl.addItems(all_engLvls)
 
         self.radioButton_2.setChecked(True)
