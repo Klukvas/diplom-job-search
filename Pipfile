@@ -14,6 +14,7 @@ sqlalchemy-utils = "*"
 requests = "*"
 pytelegrambotapi = "*"
 mysqlclient = "*"
+flask = "*"
 
 [requires]
 python_version = "*"
