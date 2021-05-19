@@ -1,4 +1,3 @@
-from email import message
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -14,16 +13,11 @@ from worker_v2 import Worker
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
-
+from connector import *
 from random import randint
-
-
-import queue
-from threading import Thread
-
+from json import loads
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
-        self.que = queue.Queue()
         QtWidgets.QWidget.__init__(self, parent)
         self.window = Ui_MainWindow()
         self.window.setupUi(self)
@@ -284,11 +278,9 @@ class LogIn(QtWidgets.QMainWindow):
             self.log_wind.log_pass.setStyleSheet("border: 2px solid red;")
             self.log_wind.log_pass.setToolTip("Введите корректный пароль")
         else:
-            user = CRUD_DB.get_user(email, password)
-            if len(user) == 0:
+            user = json.loads(get_user_conn(email, password))
+            if len(user['user']) == 0 or user['user'] == False:
                 buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован",  QtWidgets.QMessageBox.Cancel)
-            elif user[0] == False:  
-                buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован", QtWidgets.QMessageBox.Cancel)
             else:
                 self.main_window.show()
                 self.close()
@@ -322,7 +314,7 @@ class Register(QtWidgets.QMainWindow):
         self.reg_wind.email_confirm.setStyleSheet("")
 
         is_valid_email = fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', email)
-        all_emails = CRUD_DB.get_all_emails()
+        all_emails = json.loads(get_emails_conn())['emails']
         if not self.reg_wind.email_confirm.isEnabled():
             if email not in all_emails:
                 if not is_valid_email:
@@ -365,7 +357,7 @@ class Register(QtWidgets.QMainWindow):
                 self.reg_wind.email_confirm.setStyleSheet("border: 2px solid red;")
                 self.reg_wind.email_confirm.setToolTip("Указан неверный код")
             if isinstance(code, int) and code == self.confirm_code:
-                    CRUD_DB.insert_user(email, password1)
+                    create_user_conn(email, password1)
                     self.mail_ui.show()
                     self.close()
             else:
