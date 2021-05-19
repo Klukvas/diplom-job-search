@@ -86,6 +86,3 @@ class Worker:
                     result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
                     yield [result, href]
 
-
-if __name__ == '__main__':
-    Worker('window').parse_data_vacancies('https://rabota.ua/zapros/qa/украина/?scheduleId=1&profLevelIDs=5%2c4%2c3&agency=false')
