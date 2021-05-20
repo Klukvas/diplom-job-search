@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, 
 from sqlalchemy.orm import sessionmaker
 
 from sqlalchemy_utils import database_exists, create_database
-
+import asyncio
 from sqlalchemy.sql import select
 from datetime import date
 import json
@@ -87,7 +87,7 @@ def insert_EngLvl():
             db_client.session.merge(record)
         db_client.session.commit()
 
-def insert_user(email, password):
+async def insert_user(email, password):
     record = UserInfo(
                     email = email.strip(),
                     password=password.strip(),
@@ -108,14 +108,14 @@ def insert_cities():
         print('finish insert')
 
 
-def get_all_periods():
+async def get_all_periods():
     periods_objects = db_client.session.query(Search_period).order_by(Search_period.weight.desc())
     periods = []
     for object_ in periods_objects:
         periods.append(object_.period)
     return periods
 
-def get_all_cities():
+async def get_all_cities():
     cities_objects = db_client.session.query(Cities).order_by(Cities.weight.desc())
     all_cities = []
     for object_ in cities_objects:
@@ -124,7 +124,7 @@ def get_all_cities():
     all_cities.insert(0, 'Вся Украина')
     return all_cities
 
-def get_all_headings():
+async def get_all_headings():
     heading_objects = db_client.session.query(Heading).order_by(Heading.weight.desc())
     headings = []
     for object_ in heading_objects:
@@ -133,7 +133,7 @@ def get_all_headings():
     headings.insert(0, 'Все рубрики')
     return headings
 
-def get_all_engLvls():
+async def get_all_engLvls():
     engLvls_objects = db_client.session.query(EngLvl).order_by(EngLvl.weight.desc())
     all_engLvls = []
     for object_ in engLvls_objects:
@@ -141,7 +141,7 @@ def get_all_engLvls():
     all_engLvls.reverse()
     return all_engLvls
 
-def get_user_db(email, password):
+async def get_user_db(email, password):
     user_exists = db_client.session.query(UserInfo).filter(text(f"UserInfo.email like binary '{email}' and UserInfo.password like binary '{password}'"))
 
     user = []
@@ -149,7 +149,7 @@ def get_user_db(email, password):
         user.append(object_.confirmed)
     return user
 
-def get_all_emails():
+async def get_all_emails():
     user_exists = db_client.session.query(UserInfo).all()
     user = []
     for object_ in user_exists:
