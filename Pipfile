@@ -14,7 +14,7 @@ sqlalchemy-utils = "*"
 requests = "*"
 pytelegrambotapi = "*"
 mysqlclient = "*"
-flask = "*"
+flask = {extras = ["async"], version = "*"}
 
 [requires]
 python_version = "*"
