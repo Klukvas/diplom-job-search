@@ -63,7 +63,15 @@ class MyWin(QtWidgets.QMainWindow):
             "Юристы, адвокаты, нотариусы": 29
         }
         self.all_ids = []
-        
+        self.synchronized_vacans()
+    def synchronized_vacans(self):
+        vacans = CRUD_DB.get_unsynchronized_vacans()
+        if len(vacans):
+            id = CRUD_DB.get_user_id()
+            resp = loads(synchronized_vacans_conn(vacans, id[0]))["upd_ids"]
+            print(resp)
+            for id in resp:
+                CRUD_DB.upd_sync(id)
     def start_work(self):
         self.window.start_work.setEnabled(False)
         # self.worker = Worker(self.window)
@@ -87,7 +95,7 @@ class MyWin(QtWidgets.QMainWindow):
             self.window.password.setToolTip("Введите корректный пароль")
             self.window.password.clear()
         city = self.window.city.currentText()
-        possible_city = CRUD_DB.get_all_cities()
+        possible_city = get_cities_conn()
         selected_city = self.window.city.currentText()
         if selected_city not in possible_city:
             self.window.city.setStyleSheet("border: 2px solid red;")
@@ -202,7 +210,6 @@ class MyWin(QtWidgets.QMainWindow):
                     return
     @QtCore.pyqtSlot()
     def enable_start(self):
-        print('SOOOOOOOO12')
         self.window.start_work.setEnabled(True)
         self.thread.terminate()
     @QtCore.pyqtSlot(str)
@@ -278,10 +285,16 @@ class LogIn(QtWidgets.QMainWindow):
             self.log_wind.log_pass.setStyleSheet("border: 2px solid red;")
             self.log_wind.log_pass.setToolTip("Введите корректный пароль")
         else:
-            user = json.loads(get_user_conn(email, password))
-            if len(user['user']) == 0 or user['user'] == False:
+            resp = json.loads(get_user_conn(email, password))
+            print(resp)
+            # user = resp['user']
+            
+            if len(resp['user']) == 0:
                 buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован",  QtWidgets.QMessageBox.Cancel)
             else:
+                user_id = resp['user'][1]
+                CRUD_DB.delete_ids()
+                CRUD_DB.insert_id(user_id)
                 self.main_window.show()
                 self.close()
 
@@ -357,9 +370,16 @@ class Register(QtWidgets.QMainWindow):
                 self.reg_wind.email_confirm.setStyleSheet("border: 2px solid red;")
                 self.reg_wind.email_confirm.setToolTip("Указан неверный код")
             if isinstance(code, int) and code == self.confirm_code:
-                    create_user_conn(email, password1)
-                    self.mail_ui.show()
-                    self.close()
+                    resp = loads(create_user_conn(email, password1))
+                    if resp['result'] == 1:
+                        id = resp['id'][0]
+                        CRUD_DB.delete_ids()
+                        CRUD_DB.insert_id(id)
+                        self.mail_ui.show()
+                        self.close()
+                    else:
+                        buttonReply = QtWidgets.QMessageBox.question(self, 'Имейл занят', "Извините, но введенный вами имейл уже зарегестрирован в системе",  QtWidgets.QMessageBox.Cancel)
+
             else:
                 self.reg_wind.email_confirm.setStyleSheet("border: 2px solid red;")
                 self.reg_wind.email_confirm.setToolTip("Указан неверный код")
