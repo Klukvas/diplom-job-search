@@ -52,3 +52,11 @@ Cделать work_log ридонли - желательно через диза
 Сделать чекбокс Отправлять резюме повторно - по дефолту тру
 
         self.resend.setChecked(True)
+
+Сделать заполняемые поля логина если есть инфа в базе(Login.py)
+
+        rememeredData = CRUD_DB.get_rememeredData()
+        if len(rememeredData):
+            self.log_email.setText(rememeredData[0])
+            self.log_pass.setText(rememeredData[1])
+            self.remember.setChecked(True)

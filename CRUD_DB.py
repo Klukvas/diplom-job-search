@@ -24,9 +24,42 @@ class DataBaseClient:
 
 db_client = DataBaseClient()
 
+class RememeredData(Base):
+    __tablename__ = 'RememeredData'
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    email = Column(String(100))
+    password = Column(String(100))
+
+def insert_rememeredData(email, password):
+    record = RememeredData(
+            email = email,
+            password = password
+            ) 
+    db_client.session.merge(record)
+    db_client.session.commit()
+    print('finish insert')
+
+def get_rememeredData():
+    data_object = db_client.session.query(RememeredData).all()
+    data = []
+    for object_ in data_object:
+        data.append(object_.email)
+        data.append(object_.password)
+    return data
+
+def delete_rememeredData():
+    db_client.session.query(RememeredData).delete()
+    db_client.session.commit()
+
 class UserId(Base):
     __tablename__ = 'userId'
     id = Column(Integer(), primary_key=True)
+def get_user_id():
+    id_objects = db_client.session.query(UserId).all()
+    ids = []
+    for object_ in id_objects:
+        ids.append(object_.id)
+    return ids
 
 class SendedCvs(Base):
     __tablename__ = 'sendedCvs'
@@ -90,18 +123,14 @@ def get_unsynchronized_vacans():
         unsynchronized_vacans.append(vacan_info)
     return unsynchronized_vacans
 
-def get_user_id():
-    id_objects = db_client.session.query(UserId).all()
-    ids = []
-    for object_ in id_objects:
-        ids.append(object_.id)
-    return ids
+
 
 def upd_sync(id):
     db_client.session.query(SendedCvs).\
         filter(SendedCvs.id==id).\
         update({'synchronized': True})
     db_client.session.commit()
+
 def delete_ids():
     db_client.session.query(UserId).delete()
     db_client.session.commit()
