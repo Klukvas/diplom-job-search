@@ -295,6 +295,11 @@ class LogIn(QtWidgets.QMainWindow):
                 user_id = resp['user'][1]
                 CRUD_DB.delete_ids()
                 CRUD_DB.insert_id(user_id)
+                if self.log_wind.remember.isChecked():
+                    CRUD_DB.delete_rememeredData()
+                    CRUD_DB.insert_rememeredData(email, password)
+                else:
+                    CRUD_DB.delete_rememeredData()
                 self.main_window.show()
                 self.close()
 
