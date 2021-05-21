@@ -29,8 +29,12 @@ async def create_user():
     elif password == None:
         return json.dumps({'result':0, 'message': 'Password parameter is required'})
     else:
-        await insert_user(email, password)
-        return json.dumps({'result':1})
+        resp = await insert_user(email, password)
+        if resp:
+            id = await get_userId_db(email, password)
+            return json.dumps({'result':1, 'id': id})
+        else:
+            return json.dumps({'result':0})
 
 @app.route('/get_emails', methods=['GET'])
 async def get_emails():
@@ -58,6 +62,12 @@ async def get_periods():
     periods = await get_all_periods()
     return json.dumps({'periods': periods}, ensure_ascii=False)
 
-
+@app.route('/sunchronize', methods=['POST'])
+async def sunchronize():
+    request_data = request.get_json()
+    vacans_object = request_data['vacans_object']
+    id = request_data['id']
+    upd_ids = await insert_vacans(vacans_object, id)
+    return json.dumps({'upd_ids': upd_ids}, ensure_ascii=False)
 if __name__ == '__main__':
     app.run()

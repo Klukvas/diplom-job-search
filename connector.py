@@ -17,6 +17,20 @@ def create_user_conn(email, password):
 
     return response.text
 
+def synchronized_vacans_conn(vacans_ovjects, id):
+    url = f"{host}/sunchronize"
+    payload = json.dumps({
+        "vacans_object": vacans_ovjects,
+        "id": id
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    return response.text
+
 def get_user_conn(email, password):
     url = f"{host}/get_user?email={email}&password={password}"
     payload={}
@@ -65,4 +79,3 @@ def get_periods_conn():
     response = requests.request("GET", url, headers=headers, data=payload)
     data = json.loads(response.text)
     return data['periods']
-print(get_headings_conn())
