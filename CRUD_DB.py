@@ -7,7 +7,8 @@ from sqlalchemy_utils import database_exists, create_database
 
 from sqlalchemy.sql import select
 from datetime import date
-
+# UserId.__table__.create(DataBaseClient().engine)
+import json
 
 Base = declarative_base()
 
@@ -23,6 +24,9 @@ class DataBaseClient:
 
 db_client = DataBaseClient()
 
+class UserId(Base):
+    __tablename__ = 'userId'
+    id = Column(Integer(), primary_key=True)
 
 class SendedCvs(Base):
     __tablename__ = 'sendedCvs'
@@ -33,6 +37,7 @@ class SendedCvs(Base):
     cv_name = Column(String(100))
     is_profCv = Column(Boolean(), unique=False)
     date_of_callback = Column(DATE(), default=date.today())
+    synchronized = Column(Boolean(), unique=False, default=False)
 
 def insert_sended_cvs(vacancy_id, company_id, cv_id, cv_name ,is_profCv):
     record = SendedCvs(
@@ -42,6 +47,14 @@ def insert_sended_cvs(vacancy_id, company_id, cv_id, cv_name ,is_profCv):
         cv_name = cv_name,
         is_profCv = is_profCv
                         ) 
+    db_client.session.merge(record)
+    db_client.session.commit()
+    print('finish insert')
+
+def insert_id(id):
+    record = UserId(
+            id = id
+            ) 
     db_client.session.merge(record)
     db_client.session.commit()
     print('finish insert')
@@ -59,3 +72,36 @@ def get_filtered_vacans(value):
     for object_ in vacans_objects:
         filtered_vacans.append(object_.vacancy_id)
     return filtered_vacans
+
+def get_unsynchronized_vacans():
+    vacans_objects = db_client.session.query(SendedCvs).filter(SendedCvs.synchronized==False)
+    unsynchronized_vacans = []
+    for object_ in vacans_objects:
+        vacan_info = json.dumps({
+            "id":  object_.id,
+            "vacancy_id": object_.vacancy_id,
+            "company_id": object_.company_id,
+            "cv_id": object_.cv_id,
+            "cv_name": object_.cv_name,
+            "is_profCv": object_.is_profCv,
+            "date_of_callback": object_.date_of_callback.isoformat()
+            })
+
+        unsynchronized_vacans.append(vacan_info)
+    return unsynchronized_vacans
+
+def get_user_id():
+    id_objects = db_client.session.query(UserId).all()
+    ids = []
+    for object_ in id_objects:
+        ids.append(object_.id)
+    return ids
+
+def upd_sync(id):
+    db_client.session.query(SendedCvs).\
+        filter(SendedCvs.id==id).\
+        update({'synchronized': True})
+    db_client.session.commit()
+def delete_ids():
+    db_client.session.query(UserId).delete()
+    db_client.session.commit()

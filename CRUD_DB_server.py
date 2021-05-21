@@ -26,10 +26,22 @@ db_client = DataBaseClient()
 
 class UserInfo(Base):
     __tablename__ = 'userinfo'
-    email = Column(String(100),  primary_key=True, unique = True)
-    password = Column(String(100),  primary_key=True, unique = True)
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    email = Column(String(100), unique = True)
+    password = Column(String(100))
     confirmed = Column(Boolean(), unique=False, default=False)
     chat_id = Column(Integer())
+
+class SendedCvs(Base):
+    __tablename__ = 'sendedCvs'
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    user_id = Column(Integer())
+    vacancy_id = Column(Integer())
+    company_id = Column(Integer())
+    cv_id = Column(Integer())
+    cv_name = Column(String(100))
+    is_profCv = Column(Boolean(), unique=False)
+    date_of_callback = Column(DATE(), default=date.today())
 
 class EngLvl(Base):
     __tablename__ = 'EngLvl'
@@ -88,13 +100,38 @@ def insert_EngLvl():
         db_client.session.commit()
 
 async def insert_user(email, password):
-    record = UserInfo(
-                    email = email.strip(),
-                    password=password.strip(),
-                    confirmed=True
-                                    ) 
-    db_client.session.merge(record)
+    is_success = False
+    try:
+        record = UserInfo(
+                        email = email.strip(),
+                        password=password.strip(),
+                        confirmed=True
+                                        ) 
+        db_client.session.merge(record)
+        db_client.session.commit()
+        is_success = True
+    except:
+        pass
+    return is_success
+
+async def insert_vacans(vacans_object, id):
+    sync_ids = []
+    
+    for vacan in vacans_object:
+        vacan = json.loads(vacan)
+        record = SendedCvs(
+                user_id = id,
+                vacancy_id = int(vacan["vacancy_id"]),
+                company_id = int(vacan['company_id']),
+                cv_id = int(vacan['cv_id']),
+                cv_name = vacan['cv_name'],
+                is_profCv = vacan['is_profCv'],
+                date_of_callback = vacan['date_of_callback']
+                                ) 
+        sync_ids.append(vacan["id"])
+        db_client.session.merge(record)
     db_client.session.commit()
+    return sync_ids
 
 def insert_cities():
     with open('data_for_db\cities.txt', encoding='utf-8') as f:
@@ -106,7 +143,6 @@ def insert_cities():
             db_client.session.merge(record)
         db_client.session.commit()
         print('finish insert')
-
 
 async def get_all_periods():
     periods_objects = db_client.session.query(Search_period).order_by(Search_period.weight.desc())
@@ -147,6 +183,15 @@ async def get_user_db(email, password):
     user = []
     for object_ in user_exists:
         user.append(object_.confirmed)
+        user.append(object_.id)
+    return user
+
+async def get_userId_db(email, password):
+    user_exists = db_client.session.query(UserInfo).filter(text(f"UserInfo.email like binary '{email}' and UserInfo.password like binary '{password}'"))
+
+    user = []
+    for object_ in user_exists:
+        user.append(object_.id)
     return user
 
 async def get_all_emails():
