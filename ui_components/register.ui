@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>341</width>
-    <height>254</height>
+    <height>288</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,26 +19,39 @@
   <property name="minimumSize">
    <size>
     <width>341</width>
-    <height>254</height>
+    <height>288</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>341</width>
-    <height>254</height>
+    <height>288</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font-size: 11px</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: black;
+color: white;
+QLablel{
+	background-color: rgb(255, 255, 255);
+};
+QLineEdit{
+	background-color: rgb(255, 255, 255);
+}</string>
+   </property>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>10</y>
       <width>301</width>
-      <height>234</height>
+      <height>270</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -50,7 +63,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="log_email"/>
+      <widget class="QLineEdit" name="log_email">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid rgb(255, 158, 2);
+color: rgb(0, 0, 0)</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="l_pass">
@@ -60,7 +79,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="log_pass"/>
+      <widget class="QLineEdit" name="log_pass">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid rgb(255, 158, 2);
+color: rgb(0, 0, 0)</string>
+       </property>
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="l_pass_2">
@@ -70,7 +98,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="log_pass_2"/>
+      <widget class="QLineEdit" name="log_pass_2">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid rgb(255, 158, 2);
+color: rgb(0, 0, 0)</string>
+       </property>
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="l_email_confirm">
@@ -84,6 +121,11 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid rgb(255, 158, 2);
+color: rgb(0, 0, 0)</string>
+       </property>
        <property name="readOnly">
         <bool>false</bool>
        </property>
@@ -91,6 +133,13 @@
      </item>
      <item>
       <widget class="QPushButton" name="login">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 158, 2);
+margin-top:4px;
+padding:2px 2px 2px 2px;
+border: 1px solid rgb(255, 255, 255);
+color: rgb(0, 0, 0)</string>
+       </property>
        <property name="text">
         <string>Зарегистрироваться</string>
        </property>
@@ -99,7 +148,11 @@
      <item>
       <widget class="QPushButton" name="go_login">
        <property name="styleSheet">
-        <string notr="true">background-color: rgba(255, 255, 255, 10);</string>
+        <string notr="true">background-color: rgb(255, 158, 2);
+margin-top:4px;
+padding:2px 2px 2px 2px;
+border: 1px solid rgb(255, 255, 255);
+color: rgb(0, 0, 0)</string>
        </property>
        <property name="text">
         <string>Вход в аккаунт</string>
