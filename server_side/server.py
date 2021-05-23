@@ -51,7 +51,6 @@ async def get_headings():
     headings = await get_all_headings()
     return json.dumps({'headings': headings}, ensure_ascii=False)
 
-
 @app.route('/get_cities', methods=['GET'])
 async def get_cities():
     all_cities = await get_all_cities()

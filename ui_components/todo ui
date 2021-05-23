@@ -27,18 +27,34 @@ Pазрешить мультиселект чекбоксов
 
 Заполнить данными дропдаун поля
         import connector
-        
+        import CRUD_DB
         ...
-        all_periods = connector.get_periods_conn()
-        self.period_search.addItems(all_periods)
+        
+        self.get_data_for_ui()
 
+
+
+
+    def get_data_for_ui(self):
+        CRUD_DB.sync_ui_data()
+        all_periods = connector.get_periods_conn()
+        if all_periods == 'error':
+            all_periods = CRUD_DB.get_all_periods
+        self.period_search.addItems(all_periods)
+            
         all_variants = connector.get_headings_conn()
+        if all_variants == 'error':
+            all_variants = CRUD_DB.get_all_headings()
         self.variants.addItems(all_variants)
 
         all_cities = connector.get_cities_conn()
+        if all_cities == 'error':
+            all_cities = CRUD_DB.get_all_cities()
         self.city.addItems(all_cities)
 
         all_engLvls = connector.get_engLvls_conn()
+        if all_engLvls == 'error':
+            all_engLvls = CRUD_DB.get_all_engLvls()
         self.eng_lvl.addItems(all_engLvls)
 
 Пооставить по дефолту активным радиобраттон резюме, которое было созданно на сайте
@@ -54,6 +70,9 @@ Cделать work_log ридонли - желательно через диза
         self.resend.setChecked(True)
 
 Сделать заполняемые поля логина если есть инфа в базе(Login.py)
+        import CRUD_DB
+        
+        ...
 
         rememeredData = CRUD_DB.get_rememeredData()
         if len(rememeredData):

@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from ui_components.gui_v2 import Ui_MainWindow
 from ui_components.login import Ui_Login
-from ui_components.register import Ui_register
+from ui_components.register import Ui_MainWindow as Ui_register
 
 import CRUD_DB
 from datetime import date, timedelta
@@ -74,6 +74,7 @@ class MyWin(QtWidgets.QMainWindow):
                 CRUD_DB.upd_sync(id)
     def start_work(self):
         self.window.start_work.setEnabled(False)
+        self.window.start_work.setStyleSheet("background-color: rgb(77, 77, 77);;\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
         # self.worker = Worker(self.window)
         self.main_url = 'https://rabota.ua/zapros'
         self.additional_url = ''
@@ -87,11 +88,13 @@ class MyWin(QtWidgets.QMainWindow):
         if not is_valid_email:
             self.window.email.setStyleSheet("border: 2px solid red;")
             self.window.start_work.setEnabled(True)
+            self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
             self.window.email.setToolTip("Введите корректный имейл")
             self.window.email.clear()
         if is_valid_password == 0:
             self.window.password.setStyleSheet("border: 2px solid red;")
             self.window.start_work.setEnabled(True)
+            self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
             self.window.password.setToolTip("Введите корректный пароль")
             self.window.password.clear()
         city = self.window.city.currentText()
@@ -101,16 +104,22 @@ class MyWin(QtWidgets.QMainWindow):
             self.window.city.setStyleSheet("border: 2px solid red;")
             self.window.city.setToolTip("Введите корректный город поиска")
             self.window.start_work.setEnabled(True)
+            self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
         else:
             if len(self.window.name_of_work.text()) < 1:
                 self.window.name_of_work.setStyleSheet("border: 2px solid red;") 
                 self.window.start_work.setEnabled(True)
+                self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
+
+
                 self.window.name_of_work.setToolTip("Введите корректную должность")
                 self.window.name_of_work.clear()
             else:
                 if len(self.window.cv_name.text()) < 2:
                     self.window.cv_name.setStyleSheet("border: 2px solid red;")
                     self.window.start_work.setEnabled(True)
+                    self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
+
                     self.window.cv_name.setToolTip("Введите корректное название резюме")
                 else:
                     self.main_url += f'/{self.window.name_of_work.text()}'
@@ -141,7 +150,6 @@ class MyWin(QtWidgets.QMainWindow):
                             self.additional_url += f'&period=3&lastdate={last_7}'
                         else:
                             self.additional_url = f'?period=3&lastdate={last_7}'
-                    
                     parent = self.window.variants.currentText()
                     if parent != 'Все рубрики':
                         parent_id = self.parentId[parent]
@@ -149,14 +157,11 @@ class MyWin(QtWidgets.QMainWindow):
                             self.additional_url += f'&parentId={parent_id}'
                         else:
                             self.additional_url = f'?parentId={parent_id}'
-
-
                     if not self.window.checkBox.isChecked():
                         if len(self.additional_url):
                             self.additional_url += '&agency=false'
                         else:
                             self.additional_url = '?agency=false'
-
                     checked_pos_lvl = [x.objectName() for x in self.window.pos_level_group.buttons() if x.isChecked()]
                     if len(checked_pos_lvl):
                         for i in checked_pos_lvl:
@@ -211,6 +216,8 @@ class MyWin(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def enable_start(self):
         self.window.start_work.setEnabled(True)
+        self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
+
         self.thread.terminate()
     @QtCore.pyqtSlot(str)
     def append_from_thread(self, message):
@@ -250,9 +257,11 @@ class Connector(QtCore.QObject):
                         break
                     elif result[0] == 'AlreadySened':
                         self.addTextLog.emit(f'На вакансию https://rabota.ua/{result[1]} уже был отклик')
+                    elif result[0] == 'LoginError':
+                        self.addTextLog.emit(f'На вакансию https://rabota.ua/{result[1]} уже был отклик')
                     else:
-                        self.addTextLog.emit(f'Ошибка при отправке резюме на: https://rabota.ua/{result[1]}')
-
+                        self.addTextLog.emit(f'Невозможно войти в аккаунт используя: {self.email} / {self.password}')
+                        break
                 else:
                     if result[0] == True:
                         self.addTextLog.emit(f'Резюме было отправлено на: https://rabota.ua/{result[1]}')
