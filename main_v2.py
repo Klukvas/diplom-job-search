@@ -1,21 +1,19 @@
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5 import QtCore, QtWidgets
 from ui_components.gui_v2 import Ui_MainWindow
 from ui_components.login import Ui_Login
 from ui_components.register import Ui_MainWindow as Ui_register
-
-import CRUD_DB
+from Models import UserId, RememeredData, SendedCvs
 from datetime import date, timedelta
 from re import fullmatch, search
 from worker_v2 import Worker
-
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from connector import *
 from random import randint
 from json import loads
+
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
@@ -65,24 +63,23 @@ class MyWin(QtWidgets.QMainWindow):
         self.all_ids = []
         self.synchronized_vacans()
     def synchronized_vacans(self):
-        vacans = CRUD_DB.get_unsynchronized_vacans()
+        vacans = SendedCvs.get_unsynchronized_vacans()
         if len(vacans):
-            id = CRUD_DB.get_user_id()
+            id = UserId.get_user_id()
             resp = loads(synchronized_vacans_conn(vacans, id[0]))["upd_ids"]
-            print(resp)
             for id in resp:
-                CRUD_DB.upd_sync(id)
+                SendedCvs.upd_sync(id)
     def start_work(self):
         self.window.start_work.setEnabled(False)
         self.window.start_work.setStyleSheet("background-color: rgb(77, 77, 77);;\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
         # self.worker = Worker(self.window)
         self.main_url = 'https://rabota.ua/zapros'
         self.additional_url = ''
-        self.window.email.setStyleSheet("")
-        self.window.password.setStyleSheet("")
-        self.window.name_of_work.setStyleSheet("") 
-        self.window.cv_name.setStyleSheet("") 
-        self.window.city.setStyleSheet("")
+        self.window.email.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
+        self.window.password.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
+        self.window.name_of_work.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
+        self.window.cv_name.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
+        self.window.city.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
         is_valid_email = fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', self.window.email.text())
         is_valid_password = len(self.window.password.text())
         if not is_valid_email:
@@ -204,14 +201,6 @@ class MyWin(QtWidgets.QMainWindow):
                     # запустим поток
                     self.browserHandler.finished.connect(self.enable_start)
                     self.thread.start()
-                    # self.thread.finished.connect(self.enable_start)
-                    # parseTh = Thread(target=self.get_hrefs, args=(self.full_url,))
-                    # parseTh.start()
-                    # parseTh.join()
-                    # self.get_hrefs(self.full_url)
-                    print('AFTER START')
-                    
-
                     return
     @QtCore.pyqtSlot()
     def enable_start(self):
@@ -295,20 +284,17 @@ class LogIn(QtWidgets.QMainWindow):
             self.log_wind.log_pass.setToolTip("Введите корректный пароль")
         else:
             resp = json.loads(get_user_conn(email, password))
-            print(resp)
-            # user = resp['user']
-            
             if len(resp['user']) == 0:
                 buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован",  QtWidgets.QMessageBox.Cancel)
             else:
                 user_id = resp['user'][1]
-                CRUD_DB.delete_ids()
-                CRUD_DB.insert_id(user_id)
+                UserId.delete_ids()
+                UserId.insert_id(user_id)
                 if self.log_wind.remember.isChecked():
-                    CRUD_DB.delete_rememeredData()
-                    CRUD_DB.insert_rememeredData(email, password)
+                    RememeredData.delete_rememeredData()
+                    RememeredData.insert_rememeredData(email, password)
                 else:
-                    CRUD_DB.delete_rememeredData()
+                    RememeredData.delete_rememeredData()
                 self.main_window.show()
                 self.close()
 
@@ -387,8 +373,8 @@ class Register(QtWidgets.QMainWindow):
                     resp = loads(create_user_conn(email, password1))
                     if resp['result'] == 1:
                         id = resp['id'][0]
-                        CRUD_DB.delete_ids()
-                        CRUD_DB.insert_id(id)
+                        UserId.delete_ids()
+                        UserId.insert_id(id)
                         self.mail_ui.show()
                         self.close()
                     else:
