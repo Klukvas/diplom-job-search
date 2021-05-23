@@ -72,7 +72,7 @@ class Worker:
             self.all_ids = CRUD_DB.get_all_vacancies_ids()
         token = self.seekerApi.login(email, password)
         if token == None:
-            self.window.work_log.append(f'Невозможно войти в аккаунт используя: {email} / {password}')
+            yield 'LoginError'
         else:
             for href in self.hrefs:
                 vacancyId = search(r'vacancy\d+', href).group(0).replace('vacancy', '')
