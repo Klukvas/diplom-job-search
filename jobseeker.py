@@ -1,7 +1,6 @@
 import requests
 import json
 from datetime import datetime
-import CRUD_DB
 from Models.SendedCvs import insert_sended_cvs
 from re import search
 class Jobseeker:

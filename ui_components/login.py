@@ -14,7 +14,7 @@ class Ui_Login(object):
     def setupUi(self, Login):
         Login.setObjectName("Login")
         Login.resize(321, 194)
-        Login.setMinimumSize(QtCore.QSize(321, 171))
+        Login.setMinimumSize(QtCore.QSize(321, 194))
         Login.setMaximumSize(QtCore.QSize(321, 194))
         Login.setStyleSheet("font-size: 12px")
         self.centralwidget = QtWidgets.QWidget(Login)

@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from ui_components.gui_v2 import Ui_MainWindow
 from ui_components.login import Ui_Login
 from ui_components.register import Ui_MainWindow as Ui_register
@@ -19,6 +19,8 @@ class MyWin(QtWidgets.QMainWindow):
         QtWidgets.QWidget.__init__(self, parent)
         self.window = Ui_MainWindow()
         self.window.setupUi(self)
+        self.setWindowTitle('AutoJobSearch')
+        self.setWindowIcon(QtGui.QIcon('logo.png'))
         self.window.work_log.setReadOnly(True)
         self.window.start_work.clicked.connect(self.start_work)
         self.type_of_work = {'all': 0, 'full': 1, 'practice': 4, 'not_full': 2, 'remote': 3, 'project': 5, 'part': 7, 'season': 6 }
@@ -75,21 +77,21 @@ class MyWin(QtWidgets.QMainWindow):
         # self.worker = Worker(self.window)
         self.main_url = 'https://rabota.ua/zapros'
         self.additional_url = ''
-        self.window.email.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
-        self.window.password.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
-        self.window.name_of_work.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
-        self.window.cv_name.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
-        self.window.city.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 2px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
+        self.window.email.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
+        self.window.password.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
+        self.window.name_of_work.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
+        self.window.cv_name.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
+        self.window.city.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
         is_valid_email = fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', self.window.email.text())
         is_valid_password = len(self.window.password.text())
         if not is_valid_email:
-            self.window.email.setStyleSheet("border: 2px solid red;")
+            self.window.email.setStyleSheet("border: 4px solid red;")
             self.window.start_work.setEnabled(True)
             self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
             self.window.email.setToolTip("Введите корректный имейл")
             self.window.email.clear()
         if is_valid_password == 0:
-            self.window.password.setStyleSheet("border: 2px solid red;")
+            self.window.password.setStyleSheet("border: 4px solid red;")
             self.window.start_work.setEnabled(True)
             self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
             self.window.password.setToolTip("Введите корректный пароль")
@@ -98,13 +100,13 @@ class MyWin(QtWidgets.QMainWindow):
         possible_city = get_cities_conn()
         selected_city = self.window.city.currentText()
         if selected_city not in possible_city:
-            self.window.city.setStyleSheet("border: 2px solid red;")
+            self.window.city.setStyleSheet("border: 4px solid red;")
             self.window.city.setToolTip("Введите корректный город поиска")
             self.window.start_work.setEnabled(True)
             self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
         else:
             if len(self.window.name_of_work.text()) < 1:
-                self.window.name_of_work.setStyleSheet("border: 2px solid red;") 
+                self.window.name_of_work.setStyleSheet("border: 4px solid red;") 
                 self.window.start_work.setEnabled(True)
                 self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
 
@@ -113,7 +115,7 @@ class MyWin(QtWidgets.QMainWindow):
                 self.window.name_of_work.clear()
             else:
                 if len(self.window.cv_name.text()) < 2:
-                    self.window.cv_name.setStyleSheet("border: 2px solid red;")
+                    self.window.cv_name.setStyleSheet("border: 4px solid red;")
                     self.window.start_work.setEnabled(True)
                     self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
 
@@ -266,26 +268,27 @@ class LogIn(QtWidgets.QMainWindow):
         QtWidgets.QWidget.__init__(self, parent)
         self.log_wind = Ui_Login()
         self.log_wind.setupUi(self)
+        self.setWindowTitle("AutoJobSearch")
+        self.setWindowIcon(QtGui.QIcon('logo.png'))
         self.reg_wind = Register()
         self.main_window = MyWin()
         self.log_wind.go_login_2.clicked.connect(self.open_register)
         self.log_wind.login.clicked.connect(self.login)
-        self.log_wind.log_email.setStyleSheet("")
 
     def login(self):
         
         email = self.log_wind.log_email.text().strip()
         password = self.log_wind.log_pass.text().strip()
         if ';' in email:
-            self.log_wind.log_email.setStyleSheet("border: 2px solid red;")
+            self.log_wind.log_email.setStyleSheet("border: 4px solid red;")
             self.log_wind.log_email.setToolTip("Введите корректный имейл")
         elif ';' in password:
-            self.log_wind.log_pass.setStyleSheet("border: 2px solid red;")
+            self.log_wind.log_pass.setStyleSheet("border: 4px solid red;")
             self.log_wind.log_pass.setToolTip("Введите корректный пароль")
         else:
             resp = json.loads(get_user_conn(email, password))
             if len(resp['user']) == 0:
-                buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован",  QtWidgets.QMessageBox.Cancel)
+                buttonReply = QtWidgets.QMessageBox.question(self, 'Аккаунт не зарегестрирован', "Аккаунт с такими данными для входа не был зарегестрирован",  QtWidgets.QMessageBox.Ok)
             else:
                 user_id = resp['user'][1]
                 UserId.delete_ids()
@@ -305,10 +308,13 @@ class LogIn(QtWidgets.QMainWindow):
 class Register(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
+
         self.reg_wind = Ui_register()
         self.mail_ui = MyWin()
         self.confirm_code = ''
         self.reg_wind.setupUi(self)
+        self.setWindowTitle('AutoJobSearch')
+        self.setWindowIcon(QtGui.QIcon('logo.png'))
         self.reg_wind.go_login.clicked.connect(self.open_login)
         self.reg_wind.login.clicked.connect(self.register)
 
@@ -321,53 +327,68 @@ class Register(QtWidgets.QMainWindow):
         self.reg_wind.log_pass_2.setToolTip("")
         self.reg_wind.email_confirm.setToolTip("")
         
-        self.reg_wind.log_email.setStyleSheet("")
-        self.reg_wind.log_pass.setStyleSheet("")
-        self.reg_wind.log_pass_2.setStyleSheet("")
-        self.reg_wind.email_confirm.setStyleSheet("")
+        self.reg_wind.log_email.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+        "border: 2px solid rgb(255, 158, 2);\n"
+        "color: rgb(0, 0, 0)")
+        self.reg_wind.log_pass.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+        "border: 2px solid rgb(255, 158, 2);\n"
+        "color: rgb(0, 0, 0)")
+        self.reg_wind.log_pass_2.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+        "border: 2px solid rgb(255, 158, 2);\n"
+        "color: rgb(0, 0, 0)")
+
 
         is_valid_email = fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', email)
         all_emails = json.loads(get_emails_conn())['emails']
         if not self.reg_wind.email_confirm.isEnabled():
             if email not in all_emails:
                 if not is_valid_email:
-                    self.reg_wind.log_email.setStyleSheet("border: 2px solid red;")
+                    self.reg_wind.log_email.setStyleSheet("border: 4px solid red;background-color: rgb(255, 255, 255);\n"
+                    "color: rgb(0, 0, 0)")
                     self.reg_wind.log_email.setToolTip("Введите корректный имейл")
 
                 else:
                     if len(password1) <= 5 or len(password1) >= 20:
-                        self.reg_wind.log_pass.setStyleSheet("border: 2px solid red;")
+                        self.reg_wind.log_pass.setStyleSheet("border: 4px solid red;background-color: rgb(255, 255, 255);\n"
+                    "color: rgb(0, 0, 0)")
                         self.reg_wind.log_pass.setToolTip("Длинна пароля должна быть от 5 до 20")
                     else:
                         is_valid_password = search(r'[!@#$%^&*()_+=;:?.,]',password1)
                         if is_valid_password != None:
-                            self.reg_wind.log_pass.setStyleSheet("border: 2px solid red;")
+                            self.reg_wind.log_pass.setStyleSheet("border: 4px solid red;background-color: rgb(255, 255, 255);\n"
+                    "color: rgb(0, 0, 0)")
                             self.reg_wind.log_pass.setToolTip(f"Пароль не должен иметь спец.символов: {is_valid_password.group(0)}")
                         else:
                             if password1 != password2:
-                                self.reg_wind.log_pass.setStyleSheet("border: 2px solid red;")
+                                self.reg_wind.log_pass.setStyleSheet("border: 4px solid red;background-color: rgb(255, 255, 255);\n"
+                    "color: rgb(0, 0, 0)")
                                 self.reg_wind.log_pass.setToolTip("Пароли должны совпадать")
 
-                                self.reg_wind.log_pass_2.setStyleSheet("border: 2px solid red;")
+                                self.reg_wind.log_pass_2.setStyleSheet("border: 4px solid red;background-color: rgb(255, 255, 255);\n"
+                    "color: rgb(0, 0, 0)")
                                 self.reg_wind.log_pass_2.setToolTip("Пароли должны совпадать")
                             else:
                                 self.confirm_code = randint(100000000, 1000000000)
                                 self.reg_wind.email_confirm.setEnabled(True)
                                 res = self.send_email(self.confirm_code, email)
                                 if res == 0:
-                                    buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "На вашу почту был отправлен имейл с кодом. Введите код в после подтверждения и нажмите кнопку регистрации еще раз",  QtWidgets.QMessageBox.Cancel)
+                                    buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "На вашу почту был отправлен имейл с кодом. Введите код в после подтверждения и нажмите кнопку регистрации еще раз",  QtWidgets.QMessageBox.Ok)
+                                    self.reg_wind.email_confirm.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+                                    "border: 1px solid rgb(255, 158, 2);\n"
+                                    "color: rgb(0, 0, 0)")
                                 else:
-                                    buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "Не удалось отправить имейл с кодом подтверждения на почту. Убедитесь в правильности написания имейла",  QtWidgets.QMessageBox.Cancel)
+                                    buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "Не удалось отправить имейл с кодом подтверждения на почту. Убедитесь в правильности написания имейла",  QtWidgets.QMessageBox.Ok)
                                     self.reg_wind.email_confirm.setEnabled(False)
             else:
-                buttonReply = QtWidgets.QMessageBox.question(self, 'Имейл занят', "Извините, но введенный вами имейл уже зарегестрирован в системе",  QtWidgets.QMessageBox.Cancel)
+                buttonReply = QtWidgets.QMessageBox.question(self, 'Имейл занят', "Извините, но введенный вами имейл уже зарегестрирован в системе",  QtWidgets.QMessageBox.Ok)
 
         else:
             code = self.reg_wind.email_confirm.text()
             try:
                 code = int(code)
             except:
-                self.reg_wind.email_confirm.setStyleSheet("border: 2px solid red;")
+                self.reg_wind.email_confirm.setStyleSheet("border: 4px solid red;background-color: rgb(255, 255, 255);\n"
+                    "color: rgb(0, 0, 0)")
                 self.reg_wind.email_confirm.setToolTip("Указан неверный код")
             if isinstance(code, int) and code == self.confirm_code:
                     resp = loads(create_user_conn(email, password1))
@@ -378,12 +399,13 @@ class Register(QtWidgets.QMainWindow):
                         self.mail_ui.show()
                         self.close()
                     else:
-                        buttonReply = QtWidgets.QMessageBox.question(self, 'Имейл занят', "Извините, но введенный вами имейл уже зарегестрирован в системе",  QtWidgets.QMessageBox.Cancel)
+                        buttonReply = QtWidgets.QMessageBox.question(self, 'Имейл занят', "Извините, но введенный вами имейл уже зарегестрирован в системе",  QtWidgets.QMessageBox.Ok)
 
             else:
-                self.reg_wind.email_confirm.setStyleSheet("border: 2px solid red;")
+                self.reg_wind.email_confirm.setStyleSheet("border: 4px solid red;background-color: rgb(255, 255, 255);\n"
+                    "color: rgb(0, 0, 0)")
                 self.reg_wind.email_confirm.setToolTip("Указан неверный код")
-                buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "Код отправленный на имейл и введенный вами отличаются",  QtWidgets.QMessageBox.Cancel)
+                buttonReply = QtWidgets.QMessageBox.question(self, 'Подтверждение имейла', "Код отправленный на имейл и введенный вами отличаются",  QtWidgets.QMessageBox.Ok)
 
     def send_email(self, code, email):
         result = ''
@@ -440,7 +462,3 @@ if __name__ == "__main__":
     myapp = LogIn()
     myapp.show()
     sys.exit(app.exec_())
-    # app = QtWidgets.QApplication(sys.argv)
-    # myapp = MyWin()
-    # myapp.show()
-    # sys.exit(app.exec_())

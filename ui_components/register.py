@@ -24,13 +24,13 @@ class Ui_MainWindow(object):
         MainWindow.setStyleSheet("font-size: 11px")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setStyleSheet("background-color: black;\n"
-"color: white;\n"
-"QLablel{\n"
-"    background-color: rgb(255, 255, 255);\n"
-"};\n"
-"QLineEdit{\n"
-"    background-color: rgb(255, 255, 255);\n"
-"}")
+        "color: white;\n"
+        "QLablel{\n"
+        "    background-color: rgb(255, 255, 255);\n"
+        "};\n"
+        "QLineEdit{\n"
+        "    background-color: rgb(255, 255, 255);\n"
+        "}")
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 10, 301, 270))
@@ -43,8 +43,8 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.l_email)
         self.log_email = QtWidgets.QLineEdit(self.verticalLayoutWidget)
         self.log_email.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border: 2px solid rgb(255, 158, 2);\n"
-"color: rgb(0, 0, 0)")
+        "border: 2px solid rgb(255, 158, 2);\n"
+        "color: rgb(0, 0, 0)")
         self.log_email.setObjectName("log_email")
         self.verticalLayout.addWidget(self.log_email)
         self.l_pass = QtWidgets.QLabel(self.verticalLayoutWidget)
@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.l_email_confirm)
         self.email_confirm = QtWidgets.QLineEdit(self.verticalLayoutWidget)
         self.email_confirm.setEnabled(False)
-        self.email_confirm.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+        self.email_confirm.setStyleSheet("background-color: gray;\n"
 "border: 2px solid rgb(255, 158, 2);\n"
 "color: rgb(0, 0, 0)")
         self.email_confirm.setReadOnly(False)
