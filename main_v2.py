@@ -90,120 +90,118 @@ class MyWin(QtWidgets.QMainWindow):
             self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
             self.window.email.setToolTip("Введите корректный имейл")
             self.window.email.clear()
-        if is_valid_password == 0:
-            self.window.password.setStyleSheet("border: 4px solid red;")
-            self.window.start_work.setEnabled(True)
-            self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
-            self.window.password.setToolTip("Введите корректный пароль")
-            self.window.password.clear()
-        city = self.window.city.currentText()
-        possible_city = get_cities_conn()
-        selected_city = self.window.city.currentText()
-        if selected_city not in possible_city:
-            self.window.city.setStyleSheet("border: 4px solid red;")
-            self.window.city.setToolTip("Введите корректный город поиска")
-            self.window.start_work.setEnabled(True)
-            self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
         else:
-            if len(self.window.name_of_work.text()) < 1:
-                self.window.name_of_work.setStyleSheet("border: 4px solid red;") 
+            if is_valid_password == 0:
+                self.window.password.setStyleSheet("border: 4px solid red;")
                 self.window.start_work.setEnabled(True)
                 self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
-
-
-                self.window.name_of_work.setToolTip("Введите корректную должность")
-                self.window.name_of_work.clear()
+                self.window.password.setToolTip("Введите корректный пароль")
+                self.window.password.clear()
             else:
-                if len(self.window.cv_name.text()) < 2:
-                    self.window.cv_name.setStyleSheet("border: 4px solid red;")
+                city = self.window.city.currentText()
+                possible_city = get_cities_conn()
+                selected_city = self.window.city.currentText()
+                if selected_city not in possible_city:
+                    self.window.city.setStyleSheet("border: 4px solid red;")
+                    self.window.city.setToolTip("Введите корректный город поиска")
                     self.window.start_work.setEnabled(True)
                     self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
-
-                    self.window.cv_name.setToolTip("Введите корректное название резюме")
                 else:
-                    self.main_url += f'/{self.window.name_of_work.text()}'
-                    selected_geo = self.window.city.currentText().lower()
-                    if 'украина' in selected_geo:
-                        self.main_url += f'/украина'
+                    if len(self.window.name_of_work.text()) < 1:
+                        self.window.name_of_work.setStyleSheet("border: 4px solid red;") 
+                        self.window.start_work.setEnabled(True)
+                        self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
+
+
+                        self.window.name_of_work.setToolTip("Введите корректную должность")
+                        self.window.name_of_work.clear()
                     else:
-                        selected_geo = selected_geo.replace(', ', '_').replace(' ', '_')
-                        self.main_url += f'/{selected_geo}'
+                        if len(self.window.cv_name.text()) < 2:
+                            self.window.cv_name.setStyleSheet("border: 4px solid red;")
+                            self.window.start_work.setEnabled(True)
+                            self.window.start_work.setStyleSheet("background-color: rgb(255, 158, 2);\nmargin-top:4px;\npadding:2px 2px 2px 2px;\nborder: 1px solid rgb(255, 255, 255);\ncolor: rgb(0, 0, 0)")
 
-                    checked_type_of_work = [x for x in self.window.type_of_work_group.buttons() if x.isChecked()][0].objectName()
-                    id_type_work = self.type_of_work[checked_type_of_work]
-                    if id_type_work != 0:
-                        self.additional_url = f'?scheduleId={id_type_work}'
-
-                    period = self.window.period_search.currentText()
-                    if '24' in period:
-                        yesterday = date.today() - timedelta(days=1)
-                        yesterday = yesterday.strftime('%d.%m.%Y')
-                        if len(self.additional_url):
-                            self.additional_url += f'&period=2&lastdate={yesterday}'
+                            self.window.cv_name.setToolTip("Введите корректное название резюме")
                         else:
-                            self.additional_url = f'?period=2&lastdate={yesterday}'
-                    elif '7' in period:
-                        last_7 = date.today() - timedelta(days=7)
-                        last_7 = last_7.strftime('%d.%m.%Y')
-                        if len(self.additional_url):
-                            self.additional_url += f'&period=3&lastdate={last_7}'
-                        else:
-                            self.additional_url = f'?period=3&lastdate={last_7}'
-                    parent = self.window.variants.currentText()
-                    if parent != 'Все рубрики':
-                        parent_id = self.parentId[parent]
-                        if len(self.additional_url):
-                            self.additional_url += f'&parentId={parent_id}'
-                        else:
-                            self.additional_url = f'?parentId={parent_id}'
-                    if not self.window.checkBox.isChecked():
-                        if len(self.additional_url):
-                            self.additional_url += '&agency=false'
-                        else:
-                            self.additional_url = '?agency=false'
-                    checked_pos_lvl = [x.objectName() for x in self.window.pos_level_group.buttons() if x.isChecked()]
-                    if len(checked_pos_lvl):
-                        for i in checked_pos_lvl:
-                            id_pos_lvl = self.profLevelIDs[i]
-                            if len(self.additional_url):
-                                if 'profLevelIDs' in self.additional_url:
-                                    self.additional_url += f'%2c{id_pos_lvl}'
-                                else:
-                                    self.additional_url += f'&profLevelIDs={id_pos_lvl}'
+                            self.main_url += f'/{self.window.name_of_work.text()}'
+                            selected_geo = self.window.city.currentText().lower()
+                            if 'украина' in selected_geo:
+                                self.main_url += f'/украина'
                             else:
-                                self.additional_url = f'?profLevelIDs={id_pos_lvl}'
-                    self.full_url = self.main_url + self.additional_url
-                    self.window.work_log.append(f'Попытка подключения к {self.full_url}')
-                    # conn_obj = Connector(self.full_url, self.window)
-                    # connTh = Thread(target=conn_obj.get_hrefs)
-                    # connTh.start()
-                    # connTh.join()
-                    email = self.window.email.text().strip()
-                    password = self.window.password.text().strip()
-                    nameCv = self.window.cv_name.text().strip()
-                    if self.window.get_same.isChecked():
-                        addAlert = True
-                    else:
-                        addAlert = False
-                    letter = self.window.add_letter.toPlainText()
-                    eng_lvl = self.eng_lvl[self.window.eng_lvl.currentText()]
-                    if self.window.radioButton_2.isChecked():
-                        profCv = True
-                    else:
-                        profCv = False
-                    self.thread = QtCore.QThread()
-                    # создадим объект для выполнения кода в другом потоке
-                    self.browserHandler = Connector(self.full_url, self.window, email, password, addAlert, letter, eng_lvl, profCv, nameCv)
-                    # перенесём объект в другой поток
-                    self.browserHandler.moveToThread(self.thread)
-                    # после чего подключим все сигналы и слоты
-                    self.browserHandler.addTextLog.connect(self.append_from_thread)
-                    # подключим сигнал старта потока к методу run у объекта, который должен выполнять код в другом потоке
-                    self.thread.started.connect(self.browserHandler.get_hrefs)
-                    # запустим поток
-                    self.browserHandler.finished.connect(self.enable_start)
-                    self.thread.start()
-                    return
+                                selected_geo = selected_geo.replace(', ', '_').replace(' ', '_')
+                                self.main_url += f'/{selected_geo}'
+
+                            checked_type_of_work = [x for x in self.window.type_of_work_group.buttons() if x.isChecked()][0].objectName()
+                            id_type_work = self.type_of_work[checked_type_of_work]
+                            if id_type_work != 0:
+                                self.additional_url = f'?scheduleId={id_type_work}'
+
+                            period = self.window.period_search.currentText()
+                            if '24' in period:
+                                yesterday = date.today() - timedelta(days=1)
+                                yesterday = yesterday.strftime('%d.%m.%Y')
+                                if len(self.additional_url):
+                                    self.additional_url += f'&period=2&lastdate={yesterday}'
+                                else:
+                                    self.additional_url = f'?period=2&lastdate={yesterday}'
+                            elif '7' in period:
+                                last_7 = date.today() - timedelta(days=7)
+                                last_7 = last_7.strftime('%d.%m.%Y')
+                                if len(self.additional_url):
+                                    self.additional_url += f'&period=3&lastdate={last_7}'
+                                else:
+                                    self.additional_url = f'?period=3&lastdate={last_7}'
+                            parent = self.window.variants.currentText()
+                            if parent != 'Все рубрики':
+                                parent_id = self.parentId[parent]
+                                if len(self.additional_url):
+                                    self.additional_url += f'&parentId={parent_id}'
+                                else:
+                                    self.additional_url = f'?parentId={parent_id}'
+                            if not self.window.checkBox.isChecked():
+                                if len(self.additional_url):
+                                    self.additional_url += '&agency=false'
+                                else:
+                                    self.additional_url = '?agency=false'
+                            checked_pos_lvl = [x.objectName() for x in self.window.pos_level_group.buttons() if x.isChecked()]
+                            if len(checked_pos_lvl):
+                                for i in checked_pos_lvl:
+                                    id_pos_lvl = self.profLevelIDs[i]
+                                    if len(self.additional_url):
+                                        if 'profLevelIDs' in self.additional_url:
+                                            self.additional_url += f'%2c{id_pos_lvl}'
+                                        else:
+                                            self.additional_url += f'&profLevelIDs={id_pos_lvl}'
+                                    else:
+                                        self.additional_url = f'?profLevelIDs={id_pos_lvl}'
+                            self.full_url = self.main_url + self.additional_url
+                            self.window.work_log.append(f'Попытка подключения к {self.full_url}')
+                            email = self.window.email.text().strip()
+                            password = self.window.password.text().strip()
+                            nameCv = self.window.cv_name.text().strip()
+                            if self.window.get_same.isChecked():
+                                addAlert = True
+                            else:
+                                addAlert = False
+                            letter = self.window.add_letter.toPlainText()
+                            eng_lvl = self.eng_lvl[self.window.eng_lvl.currentText()]
+                            if self.window.radioButton_2.isChecked():
+                                profCv = True
+                            else:
+                                profCv = False
+                            self.thread = QtCore.QThread()
+                            # создадим объект для выполнения кода в другом потоке
+                            self.browserHandler = Connector(self.full_url, self.window, email, password, addAlert, letter, eng_lvl, profCv, nameCv)
+                            # перенесём объект в другой поток
+                            self.browserHandler.moveToThread(self.thread)
+                            # после чего подключим все сигналы и слоты
+                            self.browserHandler.addTextLog.connect(self.append_from_thread)
+                            # подключим сигнал старта потока к методу run у объекта, который должен выполнять код в другом потоке
+                            self.thread.started.connect(self.browserHandler.get_hrefs)
+                            # запустим поток
+                            self.browserHandler.finished.connect(self.enable_start)
+                            self.thread.start()
+                            return
     @QtCore.pyqtSlot()
     def enable_start(self):
         self.window.start_work.setEnabled(True)
@@ -232,10 +230,6 @@ class Connector(QtCore.QObject):
         self.nameCv = nameCv
     def get_hrefs(self):
         count_vacansies = self.worker.parse_data_vacancies(self.url)
-        # t = Thread(target=lambda q, url: q.put(self.worker.parse_data_vacancies(url)), args=(self.que, url))
-        # t.start()
-        # t.join()
-        # count_vacansies = self.que.get()
         self.addTextLog.emit(f'Найдено вакансий по заданным критериям: {str(count_vacansies)}')
         if int(count_vacansies) > 0:
             for result in self.worker.send_cv(self.email, self.password, self.addAlert, self.letter, self.eng_lvl, self.profCv, self.nameCv):
