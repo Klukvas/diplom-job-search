@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 from math import ceil
 from time import sleep
 from jobseeker import Jobseeker
-import settings
-import CRUD_DB
+from Models import SendedCvs
 
 
 class Worker:
@@ -69,7 +68,7 @@ class Worker:
             
     def send_cv(self, email, password, addAlert, letter, eng_lvl, profCv, nameCv):
         if not self.window.resend.isChecked():
-            self.all_ids = CRUD_DB.get_all_vacancies_ids()
+            self.all_ids = SendedCvs.get_all_vacancies_ids()
         token = self.seekerApi.login(email, password)
         if token == None:
             yield 'LoginError'

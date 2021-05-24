@@ -1,7 +1,7 @@
 import requests
 import json
 from datetime import datetime
-import CRUD_DB
+from Models.SendedCvs import insert_sended_cvs
 from re import search
 class Jobseeker:
     def __init__(self):
@@ -149,7 +149,7 @@ class Jobseeker:
             responce = json.loads(response.text)
             if responce['success']:
                 company_id = search(r'company\d+', href).group(0).replace('company', '')
-                CRUD_DB.insert_sended_cvs(vacancyId, company_id, cvId, nameCv, profCv)
+                insert_sended_cvs(vacancyId, company_id, cvId, nameCv, profCv)
             return responce['success']
 
 
