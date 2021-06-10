@@ -79,9 +79,9 @@ class Worker:
                     if int(vacancyId) in self.all_ids:
                         yield ['AlreadySened', href]
                         continue
-                    result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
+                    result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href, email)
                     yield [result, href]
                 else:
-                    result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href)
+                    result = self.seekerApi.apply(token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href, email)
                     yield [result, href]
 
