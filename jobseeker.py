@@ -43,7 +43,7 @@ class Jobseeker:
         id_from_few_cvs = ''
         if flag:
             all_resumes = self.get_cv_site(token)
-            if len(all_resumes) > 1:
+            if len(all_resumes) > 0:
                 for cv in all_resumes:
                     if cv['speciality'].strip().lower() == name.strip().lower():
                         possible_cv.append(cv)
@@ -113,7 +113,7 @@ class Jobseeker:
         else:
             return None
 
-    def apply(self, token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href):
+    def apply(self, token, addAlert, vacancyId, letter, eng_lvl, profCv, nameCv, href, email):
         #profCv - резюме сделано на сайте или загруженно вручную
         cvId = self.get_cv_by_name_flag(nameCv, profCv, token)
         if cvId == 'error':
@@ -123,9 +123,7 @@ class Jobseeker:
             question = self.vacancy_has_question(vacancyId)
             payload = {
                 "addAlert": addAlert,
-                "name": "test",
-                "lastName": "test",
-                "email": "programmer56457@gmail.com",
+                "email": f"{email}",
                 "vacancyId": vacancyId,
                 "cvId": cvId,
                 "letter": f"{letter}",
@@ -151,6 +149,4 @@ class Jobseeker:
                 company_id = search(r'company\d+', href).group(0).replace('company', '')
                 insert_sended_cvs(vacancyId, company_id, cvId, nameCv, profCv)
             return responce['success']
-
-
 

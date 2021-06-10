@@ -82,7 +82,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.window.name_of_work.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
         self.window.cv_name.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)") 
         self.window.city.setStyleSheet("background-color: rgb(255, 255, 255);\nborder: 4px solid rgb(255, 158, 2);\ncolor: rgb(0, 0, 0)")
-        is_valid_email = fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', self.window.email.text())
+        is_valid_email = fullmatch(r'^[a-z0-9_]+[\._]?[a-z0-9]+[@]\w+[.]\w+$', self.window.email.text())
         is_valid_password = len(self.window.password.text())
         if not is_valid_email:
             self.window.email.setStyleSheet("border: 4px solid red;")
